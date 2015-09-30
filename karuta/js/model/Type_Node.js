@@ -66,9 +66,9 @@ UIFactory["Node"] = function( node )
 			}
 		}
 		//------------------------------
-		this.metadata = $("metadata",node);
-		this.metadatawad = $("metadata-wad",node);
-		this.metadataepm = $("metadata-epm",node);
+		this.metadata = $("metadata",node)[0];
+		this.metadatawad = $("metadata-wad",node)[0];
+		this.metadataepm = $("metadata-epm",node)[0];
 		this.semantictag = $("metadata",node).attr('semantictag');
 		this.multilingual = ($("metadata",node).attr('multilingual-node')=='Y') ? true : false;
 		//------------------------------
@@ -370,51 +370,500 @@ UIFactory["Node"].displaySidebar = function(root,destid,type,langcode,edit,paren
 		langcode = LANGCODE;
 	//---------------------
 	/// Traverse tree
-	for( var i=0;i<root.children.length;i++ )
-	{
-		var child = UICom.structure["tree"][root.children[i]].node;
-		var name = child.tagName;
-		var uuid = $(child).attr("id");
-		var text = UICom.structure["ui"][uuid].getLabel('sidebar_'+uuid,'div');
-		var node = UICom.structure["ui"][uuid];
-		var showroles = ($(node.metadatawad).attr('showroles')==undefined)?'none':$(node.metadatawad).attr('showroles');
-		var privatevalue = ($(node.metadatawad).attr('private')==undefined)?false:$(node.metadatawad).attr('private')=='Y';
-		var display = ($(node.metadatawad).attr('display')==undefined)?'Y':$(node.metadatawad).attr('display');
-		if ((display=='N' && (g_userrole=='designer' || USER.admin)) || (display=='Y' && ((showroles==g_userrole && privatevalue) || !privatevalue || g_userrole=='designer'))) {
-			if(name == "asmUnit") // Click on Unit
-			{
-//				var link = "<div class='link-unit'><a id='sidebar_"+uuid+"' class='sidebar' href='#' onclick=\"$('.selected').removeClass('selected');$(this).parent().addClass('selected');displayPage('"+uuid+"',100,'"+type+"','"+langcode+"',"+g_edit+")\">"+text+"</div></a>";
-//				$("#"+destid).append($(link));
-				var html = "";
-				html += "<div class='panel panel-group panel-default' id='parent-"+uuid+"' role='tablist'>";
-				html += "<div class='panel-heading'role='tab'>";
-				html += "  <a id='sidebar_"+uuid+"' class='sidebar-link' data-toggle='collapse' data-parent='#parent-"+parentid+"' onclick=\"displayPage('"+uuid+"',"+depth+",'"+type+"','"+langcode+"',"+g_edit+")\" href='#collapse"+uuid+"' aria-expanded='false' aria-controls='collapse"+uuid+"'>"+text+"</a>";
-				html += "</div><!-- panel-heading -->";
-				html += "<div id='collapse"+uuid+"' class='panel-collapse collapse' role='tabpanel' aria-labelledby='sidebar_"+uuid+"'>";
-				html += "<div id='panel-body"+uuid+"'></div><!-- panel-body -->";
-				html += "</div><!-- panel-collapse -->";
-				html += "</div><!-- panel -->";
-				$("#"+destid).append($(html));
+	if (type=='standard') {
+		for( var i=0;i<root.children.length;i++ )
+		{
+			var child = UICom.structure["tree"][root.children[i]].node;
+			var name = child.tagName;
+			var uuid = $(child).attr("id");
+			var text = UICom.structure["ui"][uuid].getLabel('sidebar_'+uuid,'div');
+			var node = UICom.structure["ui"][uuid];
+			var showroles = ($(node.metadatawad).attr('showroles')==undefined)?'none':$(node.metadatawad).attr('showroles');
+			var privatevalue = ($(node.metadatawad).attr('private')==undefined)?false:$(node.metadatawad).attr('private')=='Y';
+			var display = ($(node.metadatawad).attr('display')==undefined)?'Y':$(node.metadatawad).attr('display');
+			if ((display=='N' && (g_userrole=='designer' || USER.admin)) || (display=='Y' && ((showroles==g_userrole && privatevalue) || !privatevalue || g_userrole=='designer'))) {
+				if(name == "asmUnit") // Click on Unit
+				{
+	//				var link = "<div class='link-unit'><a id='sidebar_"+uuid+"' class='sidebar' href='#' onclick=\"$('.selected').removeClass('selected');$(this).parent().addClass('selected');displayPage('"+uuid+"',100,'"+type+"','"+langcode+"',"+g_edit+")\">"+text+"</div></a>";
+	//				$("#"+destid).append($(link));
+					var html = "";
+					var depth = 99;
+					html += "<div class='panel panel-group panel-default' id='parent-"+uuid+"' role='tablist'>";
+					html += "<div class='panel-heading' role='tab'>";
+					html += "  <a id='sidebar_"+uuid+"' class='sidebar-link' data-toggle='collapse' data-parent='#parent-"+parentid+"' onclick=\"displayPage('"+uuid+"',"+depth+",'"+type+"','"+langcode+"',"+g_edit+")\" href='#collapse"+uuid+"' aria-expanded='false' aria-controls='collapse"+uuid+"'>"+text+"</a>";
+					html += "</div><!-- panel-heading -->";
+					html += "<div id='collapse"+uuid+"' class='panel-collapse collapse' role='tabpanel' aria-labelledby='sidebar_"+uuid+"'>";
+					html += "<div id='panel-body"+uuid+"'></div><!-- panel-body -->";
+					html += "</div><!-- panel-collapse -->";
+					html += "</div><!-- panel -->";
+					$("#"+destid).append($(html));
+				}
+				if(name == "asmStructure") // Click on Structure
+				{
+					var depth = 1;
+					var html = "";
+					html += "<div class='panel panel-group panel-default' id='parent-"+uuid+"' role='tablist'>";
+					html += "<div class='panel-heading'role='tab'>";
+					html += "  <a   id='sidebar_"+uuid+"' class='sidebar-link' data-toggle='collapse' data-parent='#parent-"+parentid+"' onclick=\"$('.selected').removeClass('selected');$(this).parent().addClass('selected');displayPage('"+uuid+"',"+depth+",'"+type+"','"+langcode+"',"+g_edit+")\" href='#collapse"+uuid+"' aria-expanded='false' aria-controls='collapse"+uuid+"'>"+text+"</a>";
+					html += "</div><!-- panel-heading -->";
+					html += "<div id='collapse"+uuid+"' class='panel-collapse collapse' role='tabpanel' aria-labelledby='sidebar_"+uuid+"'>";
+					html += "<div id='panel-body"+uuid+"' class='panel-body'></div><!-- panel-body -->";
+					html += "</div><!-- panel-collapse -->";
+					html += "</div><!-- panel -->";
+					$("#"+destid).append($(html));
+					UIFactory["Node"].displaySidebar(UICom.structure["tree"][root.children[i]],'panel-body'+uuid,type,langcode,g_edit,uuid);
+				}
 			}
-			if(name == "asmStructure") // Click on Structure
-			{
-				var depth = 1;
-				var html = "";
-				html += "<div class='panel panel-group panel-default' id='parent-"+uuid+"' role='tablist'>";
-				html += "<div class='panel-heading'role='tab'>";
-				html += "  <a   id='sidebar_"+uuid+"' class='sidebar-link' data-toggle='collapse' data-parent='#parent-"+parentid+"' onclick=\"$('.selected').removeClass('selected');$(this).parent().addClass('selected');displayPage('"+uuid+"',"+depth+",'"+type+"','"+langcode+"',"+g_edit+")\" href='#collapse"+uuid+"' aria-expanded='false' aria-controls='collapse"+uuid+"'>"+text+"</a>";
-				html += "</div><!-- panel-heading -->";
-				html += "<div id='collapse"+uuid+"' class='panel-collapse collapse' role='tabpanel' aria-labelledby='sidebar_"+uuid+"'>";
-				html += "<div id='panel-body"+uuid+"' class='panel-body'></div><!-- panel-body -->";
-				html += "</div><!-- panel-collapse -->";
-				html += "</div><!-- panel -->";
-				$("#"+destid).append($(html));
-				UIFactory["Node"].displaySidebar(UICom.structure["tree"][root.children[i]],'panel-body'+uuid,type,langcode,g_edit,uuid);
+		}
+	}
+	if (type=='flat') {
+		for( var i=0;i<root.children.length;i++ )
+		{
+			var child = UICom.structure["tree"][root.children[i]].node;
+			var name = child.tagName;
+			var uuid = $(child).attr("id");
+			var text = UICom.structure["ui"][uuid].getLabel('sidebar_'+uuid,'span');
+			var node = UICom.structure["ui"][uuid];
+			var showroles = ($(node.metadatawad).attr('showroles')==undefined)?'none':$(node.metadatawad).attr('showroles');
+			var privatevalue = ($(node.metadatawad).attr('private')==undefined)?false:$(node.metadatawad).attr('private')=='Y';
+			var display = ($(node.metadatawad).attr('display')==undefined)?'Y':$(node.metadatawad).attr('display');
+			if ((display=='N' && (g_userrole=='designer' || USER.admin)) || (display=='Y' && ((showroles==g_userrole && privatevalue) || !privatevalue || g_userrole=='designer'))) {
+				if(name == "asmUnit") // Click on Unit
+				{
+					var html = "";
+					var depth = 99;
+					html += "<div class='sidebar-item' id='parent-"+uuid+"' role='tablist'>";
+					html += "  <a id='sidebar_"+uuid+"' class='sidebar-link' data-toggle='collapse' data-parent='#parent-"+parentid+"' onclick=\"displayPage('"+uuid+"',"+depth+",'"+type+"','"+langcode+"',"+g_edit+")\" href='#collapse"+uuid+"' aria-expanded='false' aria-controls='collapse"+uuid+"'>"+text+"</a>";
+					html += "</div><!-- panel -->";
+					$("#"+destid).append($(html));
+				}
+				if(name == "asmStructure") // Click on Structure
+				{
+					var depth = 1;
+					var html = "";
+					html += "<div class='sidebar-item' id='parent-"+uuid+"' role='tablist'>";
+					html += "  <a   id='sidebar_"+uuid+"' class='sidebar-link' data-toggle='collapse' data-parent='#parent-"+parentid+"' onclick=\"$('.selected').removeClass('selected');$(this).parent().addClass('selected');displayPage('"+uuid+"',"+depth+",'"+type+"','"+langcode+"',"+g_edit+")\" href='#collapse"+uuid+"' aria-expanded='false' aria-controls='collapse"+uuid+"'>"+text+"</a>";
+					html += "<div id='collapse"+uuid+"' class='panel-collapse collapse' role='tabpanel' aria-labelledby='sidebar_"+uuid+"'>";
+					html += "<div id='panel-body"+uuid+"' class='panel-body'></div><!-- panel-body -->";
+					html += "</div><!-- panel-collapse -->";
+					html += "</div><!-- panel -->";
+					$("#"+destid).append($(html));
+					UIFactory["Node"].displaySidebar(UICom.structure["tree"][root.children[i]],'panel-body'+uuid,type,langcode,g_edit,uuid);
+				}
 			}
 		}
 	}
 };
 
+//==================================================
+UIFactory["Node"].displayWelcomePage = function(root,dest,depth,langcode,edit,inline,backgroundParent)
+//==================================================
+{
+	var style = null;
+	var metadataepm = null;
+	var node = null;
+	var data = root.node;
+	var uuid = $(data).attr("id");
+	var images = $("asmContext:has(metadata[semantictag='welcome-image'])",data);
+	var imageid = $(images[0]).attr("id");
+	var html = "";
+//	html += "<img class='welcome-image' src='../../../karuta-backend/resources/resource/file/"+imageid+"?lang="+languages[langcode]+"'/>";
+	html += "<div id='welcome-image' style=\"background: url('../../../karuta-backend/resources/resource/file/"+imageid+"?lang="+languages[langcode]+"')\">";
+	html += "<div class='welcome-box'>";
+	html += "<div class='welcome-title' id='welcome-title_"+uuid+"'>";
+	html += UICom.structure["ui"][uuid].getLabel('welcome-title','span')
+	html += "</div>";
+	html += "<div class='welcome-line'/>";
+	html += "<div class='welcome-text' id='welcome-text'>";
+	var texts = $("asmContext:has(metadata[semantictag='welcome-baseline'])",data);
+	var textid = $(texts[0]).attr("id");
+	html += UICom.structure["ui"][textid].resource.getView('welcome-title');
+	html += "</div>";
+	html += "</div>";
+	html += "</div>";
+	$("#"+dest).append(html);
+	//----------------- WELCOME BLOCKS ------------------------
+	var welcome_blocks = $("asmUnitStructure:has(metadata[semantictag='welcome-block'])",data);
+	for (var i=0; i<welcome_blocks.length; i++) {
+		var welcome_blockid = $(welcome_blocks[i]).attr("id");
+		var welcome_block_lefts = $("asmUnitStructure:has(metadata[semantictag='welcome-left'])",welcome_blocks[i]);
+		var welcome_block_leftid = $(welcome_block_lefts[0]).attr("id");
+		var welcome_block_rights = $("asmUnitStructure:has(metadata[semantictag='welcome-right'])",welcome_blocks[i]);
+		var welcome_block_rightid = $(welcome_block_rights[0]).attr("id");
+		html = "<div class='row welcome-block'>";
+		style = "";
+		node = UICom.structure["ui"][welcome_blockid];
+		metadataepm = $(node.metadataepm);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'padding-top',true);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-size',true);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-weight',false);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-style',false);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'color',false);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'text-align',false);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'background-color',false);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'width',true);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'height',true);
+		style += UIFactory["Node"].getOtherMetadataEpm(metadataepm,'othercss');
+		html += "<div class='col-md-12' style='"+style+"'>";
+		html += " <div id='welcome-left_"+welcome_blockid+"'>";
+		html += UICom.structure["ui"][welcome_blockid].getLabel('welcome_'+welcome_blockid,'span');
+		html += " </div>";
+		html += "</div><!-- class='col-md-12' -->";
+		html += "</div><!-- class='row' -->";
+		html += "<div class='row welcome-block'>";
+		node = UICom.structure["ui"][welcome_block_leftid];
+		metadataepm = $(node.metadataepm);
+		style = "";
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'padding-top',true);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-size',true);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-weight',false);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-style',false);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'color',false);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'text-align',false);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'background-color',false);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'width',true);
+		style += UIFactory["Node"].displayMetadataEpm(metadataepm,'height',true);
+		style += UIFactory["Node"].getOtherMetadataEpm(metadataepm,'othercss');
+		html += "<div class='col-md-6' style='"+style+"'>";
+		html += " <div id='welcome-left_"+welcome_block_leftid+"'>";
+		html += " </div>";
+		html += "</div>";
+		//------------------ RIGHT SUB-BLOCK ----------------------
+		html += "<div class='col-md-6'>";
+		html += " <div id='welcome-right_"+welcome_block_rightid+"'>";
+		html += " </div>";
+		html += "</div>";
+		//---------------------------------------------------------
+		html += "</div><!-- class='row' -->";
+		$("#"+dest).append(html);
+		UIFactory["Node"].displayStandard(UICom.structure["tree"][welcome_block_leftid], 'welcome-left_'+welcome_block_leftid, 100,langcode,edit,inline,backgroundParent);
+		UIFactory["Node"].displayStandard(UICom.structure["tree"][welcome_block_rightid], 'welcome-right_'+welcome_block_rightid, 100,langcode,edit,inline,backgroundParent);
+	}
+	//---------------------------------------
+	if (g_userrole=='designer')
+		html = "<button onclick=\"$('#contenu').html('');UIFactory.Node.displayStandard(UICom.structure.tree['"+uuid+"'],'contenu',99,"+langcode+","+edit+")\">standard</button>";
+	$("#"+dest).append(html);
+}
+
+//==================================================
+UIFactory["Node"].displayBlock = function(root, dest, depth,langcode,edit,inline)
+//==================================================
+{
+	if (edit==null || edit==undefined)
+		edit = false;
+	if (inline==null || inline==undefined)
+		inline = false;
+	var menu = true;
+	//---------------------------------------
+	var data = root.node;
+	var name = $(data).prop("nodeName");
+	var uuid = $(data).attr("id");
+	var proxy_target = false;
+
+	var node = UICom.structure["ui"][uuid];
+	var writenode = ($(node.node).attr('write')=='Y')? true:false;
+	var semtag =  ($("metadata",data)[0]==undefined)?'': $($("metadata",data)[0]).attr('semantictag');
+	var display = ($(node.metadatawad).attr('display')==undefined)?'Y':$(node.metadatawad).attr('display');
+	var editnoderoles = ($(node.metadatawad).attr('editnoderoles')==undefined)?'':$(node.metadatawad).attr('editnoderoles');
+	var delnoderoles = ($(node.metadatawad).attr('delnoderoles')==undefined)?'':$(node.metadatawad).attr('delnoderoles');
+	var showtoroles = ($(node.metadatawad).attr('showtoroles')==undefined)?'':$(node.metadatawad).attr('showtoroles');
+	var editresroles = ($(node.metadatawad).attr('editresroles')==undefined)?'':$(node.metadatawad).attr('editresroles');
+	var graphicerroles = ($(node.metadatawad).attr('graphicerroles')==undefined)?'':$(node.metadatawad).attr('graphicerroles');
+	var inline_metadata = ($(node.metadata).attr('inline')==undefined)? '' : $(node.metadata).attr('inline');
+	if (inline_metadata=='Y')
+		inline = true;
+	var seenoderoles = ($(node.metadatawad).attr('seenoderoles')==undefined)? 'all' : $(node.metadatawad).attr('seenoderoles');
+	var contentfreenode = ($(node.metadatawad).attr('contentfreenode')==undefined)?'':$(node.metadatawad).attr('contentfreenode');
+	var privatevalue = ($(node.metadatawad).attr('private')==undefined)?false:$(node.metadatawad).attr('private')=='Y';
+	if ((display=='N' && g_userrole=='designer') || (display=='Y' && (((seenoderoles.indexOf(g_userrole)>-1 || showtoroles.indexOf(g_userrole)>-1) && privatevalue) || !privatevalue || g_userrole=='designer'))) {
+		if (node.resource==null || node.resource.type!='Proxy' || (node.resource.type=='Proxy' && writenode && editresroles.indexOf(g_userrole)>-1) || g_userrole=='designer') {
+			var readnode = true; // if we got the node the node is readable
+			if (g_designerrole)
+				readnode = (g_userrole=='designer' || seenoderoles.indexOf(USER.username_node.text())>-1 || seenoderoles.indexOf(g_userrole)>-1 || seenoderoles.indexOf('all')>-1)? true : false;
+			if( depth < 0 || !readnode) return;
+			//----------------edit control on proxy target ------------
+			if (proxies_edit["proxy-"+semtag]!=undefined) {
+					var parent = proxies_parent["proxy-"+semtag];
+					if (parent==dest.substring(8)) { // dest = content_{parentid}
+						proxy_target = true;
+						edit = menu = (proxies_edit["proxy-"+semtag].indexOf(g_userrole)>-1);
+					}
+			}
+			//---------------------------------------------------------	//---------------------------------------------------------
+			var html = "";
+			html += "<div id='block_"+uuid+"' uuid='"+uuid+"' ";
+			html += "class='";
+			html += name+" "+semtag+"' ";
+			html += ">";
+			if (depth>0)
+				style = UIFactory["Node"].displayMetadataEpm(metadataepm,'node-background-color',false);
+			else
+				style = UIFactory["Node"].displayMetadataEpm(metadataepm,'parent-background-color',false);
+				
+			if (name == "asmUnitStructure" || UICom.structure["ui"][uuid].resource_type=='TextField' || UICom.structure["ui"][uuid].resource_type=='Document' || UICom.structure["ui"][uuid].resource_type=='URL') {
+				style += UIFactory["Node"].getOtherMetadataEpm(metadataepm,'othercss');
+			}
+			if (name == "asmContext" && node.resource.type!='Proxy') {
+				if (proxy_target)
+					metadataepm = UICom.structure["ui"][proxies_nodeid["proxy-"+semtag]].metadataepm;
+			}
+			//------------------- Toolbar and Buttons --------------------------
+			if (edit && (!inline || g_userrole=='designer')) {
+				html += "<div class='free-toolbar'>";
+				var freeButtons = UICom.structure["ui"][uuid].getButtons(null,null,null,inline,depth,edit,menu);
+				if (freeButtons.length > 100) {
+					html += "<button class='btn btn-xs free-toolbar-menu' id='free-toolbar-menu-"+uuid+"'><span class='glyphicon glyphicon-menu-hamburger'></span></button>";
+					html += "<div id='toolbar-"+uuid+"' class='free-toolbar-buttons'>";
+					html += "	<div id='buttons-"+uuid+"'>"+ freeButtons +"</div>";
+					html += "</div>";
+				}
+				html += "</div>";
+			}
+			else {
+				html += "<div class='free-toolbar'>";
+				html += "</div>";				
+			}
+			html += "<div id='free-content' style='"+style+"'>";
+			//-------------------------------------------------------------------
+			if (name == "asmContext") {
+				//-------------- resource -------------------------
+				if (g_designerrole) {
+					writenode = (editnoderoles.indexOf(g_userrole)>-1)? true : false;
+					if (!writenode)
+						writenode = (editresroles.indexOf(g_userrole)>-1)? true : false;
+				}
+				if (g_userrole=='designer') {
+					writenode = (editnoderoles.indexOf(g_userrole)>-1)? true : false;
+					if (!writenode)
+						writenode = (editresroles.indexOf(g_userrole)>-1)? true : false;
+					if (!writenode)
+						writenode = (g_userrole=='designer')? true : false;
+				}
+				if (edit && inline && writenode){
+					html += "<div id='std_resource_"+uuid+"' ";
+					if (g_userrole=='designer') {
+						html += " style='border:1px dashed lightgrey' ";
+						
+					}
+					html += ">";
+					//-----------------------
+					if(UICom.structure["ui"][uuid].resource!=null) {
+						if (UICom.structure["ui"][uuid].getView()!='')
+							html += UICom.structure["ui"][uuid].getLabel()+"&nbsp;";
+						try {
+							UICom.structure["ui"][uuid].resource.getEditor(); // test if getEditor() exists
+							html += "<span id='get_editor_"+uuid+"'></span>";
+						}
+						catch(e) {
+							html += "<span id='display_editor_"+uuid+"'></span>";
+						}
+					} else {
+						html = UICom.structure["ui"][uuid].getEditor();
+						$("#edit-window-body-node").html($(html));
+					}
+					html += "</div>";
+				} else {
+					html += "<div class='free-context'>";
+					//----------node label ----------------------------
+					if (UICom.structure["ui"][uuid].getLabel()!='<span></span>') {
+						html += "<span ";
+						style = "";
+						style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-size',true);
+						style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-weight',false);
+						style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-style',false);
+						style += UIFactory["Node"].displayMetadataEpm(metadataepm,'color',false);
+						style += UIFactory["Node"].displayMetadataEpm(metadataepm,'text-align',false);
+						style += UIFactory["Node"].displayMetadataEpm(metadataepm,'padding-top',true);
+						style += UIFactory["Node"].getOtherMetadataEpm(metadataepm,'othercss');
+						html += "style='"+style+"'";
+						html+=">";
+						//-----------------
+						html += UICom.structure["ui"][uuid].getLabel()+"&nbsp;";
+						//-----------------
+						html+="</span>";
+					}
+					//--------------------------------------
+//					if (UICom.structure["ui"][uuid].resource_type!='Audio' && UICom.structure["ui"][uuid].resource_type!='Video' && UICom.structure["ui"][uuid].resource.getView()=='') // resource is empty
+//						html += "<span style='z-index:-5;color:lightgrey'>"+UICom.structure["ui"][uuid].resource_type+"</span>";
+					//----------------- resource ---------------------
+					html += "<div  id='std_resource_"+uuid+"' uuid='"+uuid+"' class='resource-"+node.resource.type+"' ";
+					style = "";
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-font-size',true);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-font-weight',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-font-style',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-color',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-background-color',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-text-align',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-padding-top',true);
+					style += UIFactory["Node"].getOtherMetadataEpm(metadataepm,'node-othercss');
+					html += "style='"+style+"'";
+					html+=">";
+					//-----------------
+					var res_type = UICom.structure["ui"][uuid].resource.type;
+					if (res_type=='Document' || res_type=='URL')
+						html += UICom.structure["ui"][uuid].resource.getView('std_resource_'+uuid,'free-positioning');
+					else
+						html += UICom.structure["ui"][uuid].resource.getView('std_resource_'+uuid);
+					//-----------------
+					html+="</div>";
+					//--------------------------------------
+					html += "</div>";
+					html += "</div>";
+				}
+			}
+			else {
+				//-------------- node -----------------------------
+				html += "<div ";
+				style = "";
+				if (depth>0) {
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-size',true);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-weight',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-style',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'color',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'text-align',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'background-color',false);
+				} else {
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'inparent-padding-top',true);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'inparent-font-size',true);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'inparent-font-weight',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'inparent-font-style',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'inparent-color',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'inparent-text-align',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'inparent-background-color',false);
+					style += UIFactory["Node"].getOtherMetadataEpm(metadataepm,'inparent-othercss',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'width',true);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'height',true);
+				}
+				html +=" style='"+style+"'";
+				html += ">";
+				if (depth==0 && name=='asmStructure'){
+					html += "<a id='std_node_"+uuid+"' href='#' onclick=\"displayPage('"+uuid+"',1,'standard','"+langcode+"',"+g_edit+")\"";
+					style = "";
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'inparent-color',false);
+					html +=" style='"+style+"' ";
+					html += ">"+UICom.structure["ui"][uuid].getLabel('std_node_'+uuid,'span')+"</a>";
+				} 
+				else if (depth!=1 && depth<10 && name=='asmUnit')
+					html += "<a id='std_node_"+uuid+"' href='#' onclick=\"displayPage('"+uuid+"',100,'standard','"+langcode+"',"+g_edit+")\">"+UICom.structure["ui"][uuid].getView('std_node_'+uuid)+"</a>"+"<span id='help_"+uuid+"' class='ihelp'></span>";
+				else
+					html += UICom.structure["ui"][uuid].getView('std_node_'+uuid);
+				//-------------- metainfo -------------------------
+//				if (g_userrole=='designer' || USER.admin) {
+//					html += "<div id='metainfo_"+uuid+"' class='metainfo'></div><!-- metainfo -->";
+//				}
+				//----------------------------
+				html += "</div>";
+				html += "<div id='context-"+uuid+"'></div>";
+				//--------------------------------------------------*/
+				html += "<div id='content-"+uuid+"'></div>";
+			}
+			html += "<div id='context-"+uuid+"'></div>";
+			html += "</div><!-- name -->";
+			$("#"+dest).append(html);
+			if ($("#display_editor_"+uuid).length>0) {
+				UICom.structure["ui"][uuid].resource.displayEditor("display_editor_"+uuid);
+			}
+			if ($("#get_editor_"+uuid).length>0) {
+				$("#get_editor_"+uuid).append(UICom.structure["ui"][uuid].resource.getEditor());
+			}
+			//----------- Context -----------
+			if (!inline)
+				UIFactory["Node"].displayComments('comments_'+uuid,UICom.structure["ui"][uuid]);
+			else
+				UIFactory["Node"].displayCommentsEditor('comments_'+uuid,UICom.structure["ui"][uuid]);
+			//----------- help -----------
+			if ($("metadata-wad",data)[0]!=undefined && $($("metadata-wad",data)[0]).attr('help')!=undefined && $($("metadata-wad",data)[0]).attr('help')!=""){
+				var attr_help = $($("metadata-wad",data)[0]).attr('help');
+				var helps = attr_help.split("/"); // lang1/lang2/...
+				var help_text = helps[langcode];  
+				var help =  " <a href='#'  data-toggle='popover' class='popinfo'><i class='icon-info-sign'></i></a> ";
+				$("#help_"+uuid).html(help);
+				$(".popinfo").popover({ 
+				    placement : 'right',
+				    container : 'body',
+				    title:karutaStr[LANG]['help-label'],
+				    html : true,
+				    content: help_text
+				    })
+				    .click(function(e) {
+				});
+			}
+			//-----------------------------
+			if (USER.admin || g_userrole=='designer' || graphicerroles.indexOf(g_userrole)>-1 || graphicerroles.indexOf(this.userrole)>-1) {
+				//-------------------------------
+				$("#free_"+uuid).draggable({
+					stop: function(){UIFactory["Node"].updatePosition(this);}
+				}
+				);
+				if (UICom.structure["ui"][uuid].resource_type=='Image')
+					$("#std_resource_"+uuid).resizable({
+						aspectRatio:true,
+						stop: function(){UIFactory["Node"].updateSize(this);}
+					}
+					);
+				if (UICom.structure["ui"][uuid].resource_type=='TextField' || UICom.structure["ui"][uuid].resource_type=='Document' || UICom.structure["ui"][uuid].resource_type=='URL')
+					$("#std_resource_"+uuid).resizable({
+						stop: function(){UIFactory["Node"].updateSize(this);}
+					}
+					);
+				if (name!='asmContext')
+					$("#free_"+uuid).resizable({
+						stop: function(){UIFactory["Node"].updateSize(this);}
+					}
+					);
+			}
+			if (edit &&  (USER.admin || g_userrole=='designer' || graphicerroles.indexOf(g_userrole)>-1 || delnoderoles.indexOf(g_userrole)>-1 || editresroles.indexOf(g_userrole)>-1 || editnoderoles.indexOf(g_userrole)>-1 || delnoderoles.indexOf(this.userrole)>-1 || editresroles.indexOf(this.userrole)>-1 || editnoderoles.indexOf(this.userrole)>-1)) {
+				//-------------------------------
+				if (!inline) {
+					if ($("#std_resource_"+uuid).attr('style')!=null && $("#std_resource_"+uuid).attr('style').indexOf('border')<0)
+						if (name!='asmContext')
+							$("#free_"+uuid).css('border','1px dashed lightgrey');
+						else
+							if (UICom.structure["ui"][uuid].resource_type=='Document' || UICom.structure["ui"][uuid].resource_type=='URL')
+								$("#std_resource_"+uuid).css('border','1px solid lightgrey');
+							else
+								$("#std_resource_"+uuid).css('border','1px dashed lightgrey');
+				}
+				//-------------------------------
+				$("#free-toolbar-menu-"+uuid).click(function(){
+					if ($('#toolbar-'+uuid).css('visibility')=='hidden')
+						$('#toolbar-'+uuid).css('visibility','visible');
+					else
+						$('#toolbar-'+uuid).css('visibility','hidden');
+				});
+			}
+			//----------------------------
+			if (UICom.structure["ui"][uuid].resource!=null && UICom.structure["ui"][uuid].resource.setParameter != undefined)
+				UICom.structure["ui"][uuid].resource.setParameter();
+			if (g_userrole=='designer' || USER.admin) {  //display metainfo
+				UIFactory["Node"].displayMetainfo("metainfo_"+uuid,data);
+			}
+		
+			/// For each child
+			for( var i=0; i<root.children.length; ++i ) 
+			{
+				// Recurse
+				var child = UICom.structure["tree"][root.children[i]];
+				var childnode = UICom.structure["ui"][root.children[i]];
+				var freenode = ($(childnode.metadatawad).attr('freenode')==undefined)?'':$(childnode.metadatawad).attr('freenode');
+				if (contentfreenode == 'Y' || freenode == 'Y')
+					UIFactory["Node"].displayFree(child, 'content-'+uuid, depth-1,langcode,edit,inline);
+				else
+					UIFactory["Node"].displayStandard(child, 'content-'+uuid, depth-1,langcode,edit,inline);
+			}
+			//----------------------------
+			$('input[name="datepicker"]').datepicker({format: 'yyyy/mm/dd'});
+			$('a[data-toggle=tooltip]').tooltip({html:true});
+			//----------------------------
+			var multilingual_resource = ($("metadata",data).attr('multilingual-resource')=='Y') ? true : false;
+			if (!multilingual_resource)
+				$("#embed"+uuid+NONMULTILANGCODE).oembed();
+			else
+				$("#embed"+uuid+langcode).oembed();
+			//----------------------------
+		}
+	} //---- end of private - no display
+};
 
 //==================================================
 UIFactory["Node"].displayStandard = function(root,dest,depth,langcode,edit,inline,backgroundParent)
@@ -460,7 +909,7 @@ UIFactory["Node"].displayStandard = function(root,dest,depth,langcode,edit,inlin
 					}
 			}
 			//---------------------------------------------------------
-			var html = "<div class='"+name+" "+semtag+" ";
+			var html = "<div class='page "+name+" "+semtag+" ";
 			if(UICom.structure["ui"][uuid].resource!=null)
 				html += UICom.structure["ui"][uuid].resource.type;
 			html += "'";
@@ -518,7 +967,7 @@ UIFactory["Node"].displayStandard = function(root,dest,depth,langcode,edit,inlin
 					}
 					html += "</div><!-- col-md-9 resource -->";
 				} else {
-						if (g_display_type=='standard') {
+						if (g_display_type=='standard' || g_display_type=='flat') {
 							html += "<div id='std_resource_"+uuid+"' class='col-md-9' ";
 							style = "style='";
 							style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-font-weight',false);
@@ -582,7 +1031,7 @@ UIFactory["Node"].displayStandard = function(root,dest,depth,langcode,edit,inlin
 	
 				//-------------- node -----------------------------
 				if (depth!=1 && depth<10 && name=='asmStructure') {
-					if (g_display_type=='standard')
+					if (g_display_type=='standard' || g_display_type=='flat')
 //						html += "<div id='prt_node_"+uuid+"' class='col-md-9'>";
 						html += "<div id='prt_node_"+uuid+"' class='col-md-9' style='padding-top:10px;"+style+"'>";
 					if (g_display_type=='header')
@@ -590,7 +1039,7 @@ UIFactory["Node"].displayStandard = function(root,dest,depth,langcode,edit,inlin
 						html += "<a href='#' onclick=\"displayPage('"+uuid+"',1,'standard','"+langcode+"',"+g_edit+")\">"+UICom.structure["ui"][uuid].getLabel('prt_node_'+uuid,'span')+"</a>";
 					}
 				else if (depth!=1 && depth<10 && name=='asmUnit') {
-					if (g_display_type=='standard')
+					if (g_display_type=='standard' || g_display_type=='flat')
 //						html += "<div id='prt_node_"+uuid+"' class='col-md-9'>";
 						html += "<div id='prt_node_"+uuid+"' class='col-md-9' style='padding-top:6px;"+style+"'>";
 					if (g_display_type=='header')
@@ -598,9 +1047,9 @@ UIFactory["Node"].displayStandard = function(root,dest,depth,langcode,edit,inlin
 						html += "<a href='#' onclick=\"displayPage('"+uuid+"',100,'standard','"+langcode+"',"+g_edit+")\">"+UICom.structure["ui"][uuid].getLabel('prt_node_'+uuid,'span')+"</a>"+"<span id='help_"+uuid+"' class='ihelp'></span>";
 					}
 				else {
-					if (g_display_type=='standard')
+					if (g_display_type=='standard' || g_display_type=='flat')
 //						html += "<div id='std_node_"+uuid+"' class='col-md-9'>";
-						html += "<div id='std_node_"+uuid+"' class='col-md-9' style='padding-top:6px;'>";
+						html += "<div id='std_node_"+uuid+"' class='col-md-9' style='padding-top:6px;"+style+"'>";
 					if (g_display_type=='header') {
 						html += "<div id='std_node_"+uuid+"' class='col-md-9'";
 						if (g_userrole!='designer' && semtag=='header')
@@ -729,6 +1178,7 @@ UIFactory["Node"].displayStandard = function(root,dest,depth,langcode,edit,inlin
 		}
 	} //---- end of private
 };
+
 
 
 //==================================================
@@ -2353,7 +2803,7 @@ UIFactory["Node"].getMetadataDisplayTypeAttributeEditor = function(nodeid,attrib
 //==================================================
 {
 	
-	var display_types = ['standard','header','model'];
+	var display_types = ['standard','header','model','flat'];
 	var langcode = LANGCODE;
 	if (value==null || value==undefined || value=='undefined')
 		value = "";

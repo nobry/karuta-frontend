@@ -11,7 +11,6 @@
 		<link rel="stylesheet" type="text/css" href="../../other/css/font-awesome/css/font-awesome.min.css" />
 		<link rel="stylesheet" type="text/css" href="../../other/colorpicker/css/evol.colorpicker.css" />
 		<link rel="stylesheet" type="text/css" href="../../karuta/css/karuta.css" />
-		<link rel="stylesheet" type="text/css" href="../../karuta/css/welcome.css">
 		<!-- =========================================== -->
 		<link rel="stylesheet" href="../../application/css/specific.css" />
 		<!-- =============================================================== -->
@@ -170,10 +169,8 @@
 								UIFactory["Portfolio"].parse(data);
 								if (g_display_type=="header")
 									loadLanguages(function(data) {UIFactory["Portfolio"].displayPortfolio('main-body','header',LANGCODE,g_edit);});
-								if (g_display_type=="standard")
-									UIFactory["Portfolio"].displayPortfolio('main-body','standard',LANGCODE,g_edit);
-								if (g_display_type=="model")
-									UIFactory["Portfolio"].displayPortfolio('main-body','model',LANGCODE,g_edit);
+								else
+									UIFactory["Portfolio"].displayPortfolio('main-body',g_display_type,LANGCODE,g_edit);
 								$('a[data-toggle=tooltip]').tooltip({html:true});
 								// --------------------------
 								$.ajax({
@@ -189,8 +186,8 @@
 									}
 								});
 								// --------------------------
-								if (g_display_type=="standard")
-									loadLanguages(function(data) {$("#navigation_bar").html(getNavBar('main',portfolioid,g_edit));});
+								if (g_display_type=="standard" || g_display_type=="flat")
+									loadLanguages(function(data) {$("#navigation_bar").html(getNavBar('main',portfolioid,g_edit));$("#portfolio-navbar").append(UIFactory["Portfolio"].getNavBar(g_display_type,LANGCODE,g_edit));});
 								if (g_display_type=="model")
 									loadLanguages(function(data) {$("#navigation_bar").html(getNavBar('main',portfolioid,g_edit));displayPage(UICom.rootid,1,"model",LANGCODE,g_edit);});
 								
@@ -203,7 +200,12 @@
 									
 								//---------------------------
 								$("#wait-window").hide();
-								$("#sidebar_"+UICom.rootid).click();
+								if (g_display_type=="flat") {
+									var welcomes = $("asmUnit:has(metadata[semantictag*='welcome-block'])",data);
+									var welcomeid = $(welcomes[0]).attr('id');
+									$("#sidebar_"+welcomeid).click();
+								} else
+									$("#sidebar_"+UICom.rootid).click();
 								fillEditBoxBody();
 							}
 						});

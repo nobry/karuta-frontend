@@ -41,16 +41,11 @@ function setDesignerRole(role)
 		role = 'designer';
 	g_userrole = role;
 	fillEditBoxBody();
-	$("#userrole").html(" ("+role+")");
-	if (g_display_type=='standard'){
+	$("#userrole").html(role);
+	if (g_display_type=='standard' || g_display_type=='flat'){
+		$("#sidebar").html("");
+		UIFactory["Portfolio"].displaySidebar(UICom.root,'sidebar',g_display_type,LANGCODE,true,UICom.rootid);
 		var uuid = $("#page").attr('uuid');
-		var html = "";
-		html += "	<div class='row'>";
-		html += "		<div class='col-md-3' id='sidebar'></div>";
-		html += "		<div class='col-md-9' id='contenu'></div>";
-		html += "	</div>";
-		$("#main-container").html(html);
-		UIFactory["Portfolio"].displaySidebar(UICom.root,'sidebar','standard',LANGCODE,true,UICom.rootid);
 		$("#sidebar_"+uuid).click();
 	};
 	if (g_display_type=='model'){
@@ -76,7 +71,7 @@ function getNavBar(type,portfolioid,edit)
 	var html = "";
 	html += "<nav class='navbar navbar-default'>";
 	html += "<div class='navbar-inner'>";
-	html += "	<div class='container'>";
+	html += "	<div class='container-fluid'>";
 	html += "	  <div class='nav-bar-header'>";
 	html += "		<button type='button' class='navbar-toggle collapsed' data-toggle='collapse' data-target='#collapse-1'>";
 	html += "			<span class='icon-bar'></span><span class='icon-bar'></span><span class='icon-bar'></span><span class='icon-bar'></span>";
@@ -95,7 +90,7 @@ function getNavBar(type,portfolioid,edit)
 	html += "			</ul>";
 	html += "		</div>";
 	html += "	  </div>";
-	//-----------------------------------------------------------
+	//---------------------TECHNICAL SUPPORT-----------------------
 	html += "		<div class='navbar-collapse collapse' id='collapse-1'>";
 	html += "			<ul class='nav navbar-nav'>";
 	if (type=='main'){
@@ -103,77 +98,55 @@ function getNavBar(type,portfolioid,edit)
 	}
 	html += "				<li><a href='mailto:"+technical_support+"'>"+karutaStr[LANG]['technical_support']+"</a></li>";
 	html += "			</ul>";
-	//----------------------------------------------------------
+	//-------------------LANGUAGES---------------------------
 	if (languages.length>1) {
 		html += "			<ul class='nav navbar-nav'>";
-	html += "				<li class='dropdown active'><a data-toggle='dropdown' class='dropdown-toggle' href='#'>"+karutaStr[LANG]['language']+"<span class='caret'></span></a>";
-	html += "					<ul class='dropdown-menu'>";
-	for (var i=0; i<languages.length;i++) {
-		var url = "list.htm?lang="+languages[i];
-		if (type=='main')
-			url = "main.htm?id="+portfolioid+"&amp;lang="+languages[i]+"&amp;edit="+edit;
-		if (type=='users')
-			url = "listUsers.htm?lang="+languages[i];
-		if (type=='login')
-			url = "login.htm?lang="+languages[i];
-		if (type=='create_account')
-			url = "createAccount.htm?lang="+languages[i];
-		if (type=='batch')
-			url = "createBatchAccounts.htm?lang="+languages[i];
-		html += "			<li><a href='"+url+"'>"+karutaStr[languages[i]]['language']+"</a></li>";
+		html += "				<li class='dropdown active'><a data-toggle='dropdown' class='dropdown-toggle' href='#'>"+karutaStr[LANG]['language']+"<span class='caret'></span></a>";
+		html += "					<ul class='dropdown-menu'>";
+		for (var i=0; i<languages.length;i++) {
+			var url = "list.htm?lang="+languages[i];
+			if (type=='main')
+				url = "main.htm?id="+portfolioid+"&amp;lang="+languages[i]+"&amp;edit="+edit;
+			if (type=='users')
+				url = "listUsers.htm?lang="+languages[i];
+			if (type=='login')
+				url = "login.htm?lang="+languages[i];
+			if (type=='create_account')
+				url = "createAccount.htm?lang="+languages[i];
+			if (type=='batch')
+				url = "createBatchAccounts.htm?lang="+languages[i];
+			html += "			<li><a href='"+url+"'>"+karutaStr[languages[i]]['language']+"</a></li>";
+		}
+		html += "					</ul>";
+		html += "				</li>";
 	}
-	html += "					</ul>";
-	html += "				</li>";
-	}
-	//----------------------------------------------------------
-	if ((type!='login' && type!='create_account' && type!='list') || (type=='list' && USER.admin)) {
+	//-----------------ACTIONS-------------------------------
+	if (type!='login' & USER.admin) {
 		html += "				<li>&nbsp;</li>";
 		html += "				<li class='dropdown active'><a data-toggle='dropdown' class='dropdown-toggle' href='#'>Actions<span class='caret'></span></a>";
 		html += "					<ul class='dropdown-menu'>";
-	}
-	//----------------------------------------------------------
-	if (type!='login' && type!='create_account') {
-		if (USER.admin){
-			html += "						<li><a href='../../karuta/htm/list.htm?lang="+LANG+"'>"+karutaStr[LANG]['list_portfolios']+"</a></li>";
-			html += "						<li><a href='../../karuta/htm/listUsers.htm?lang="+LANG+"'>"+karutaStr[LANG]['list_users']+"</a></li>";
-			html += "						<li><a href='../../karuta/htm/createBatch.htm?lang="+LANG+"'>"+karutaStr[LANG]['batch']+"</a></li>";
-			html += "						<li><a href='../../karuta/htm/createReport.htm?lang="+LANG+"'>"+karutaStr[LANG]['report']+"</a></li>";
-	//		html += "						<li><a href='../../karuta/htm/listRoles.htm'>"+karutaStr[LANG]['list_roles']+"</a></li>";
-	//		html += "						<li><a href='../../karuta/htm/listGroups.htm'>"+karutaStr[LANG]['list_groups']+"</a></li>";
-		}
-		if (USER.admin && type=='main'){
-			html += "<hr>";
-		}
-		if (type=='main'){
-			html += UIFactory["Portfolio"].getActions(portfolioid);
-		}
+		html += "						<li><a href='../../karuta/htm/list.htm?lang="+LANG+"'>"+karutaStr[LANG]['list_portfolios']+"</a></li>";
+		html += "						<li><a href='../../karuta/htm/listUsers.htm?lang="+LANG+"'>"+karutaStr[LANG]['list_users']+"</a></li>";
+		html += "						<li><a href='../../karuta/htm/createBatch.htm?lang="+LANG+"'>"+karutaStr[LANG]['batch']+"</a></li>";
+		html += "						<li><a href='../../karuta/htm/createReport.htm?lang="+LANG+"'>"+karutaStr[LANG]['report']+"</a></li>";
+//		html += "						<li><a href='../../karuta/htm/listRoles.htm'>"+karutaStr[LANG]['list_roles']+"</a></li>";
+//		html += "						<li><a href='../../karuta/htm/listGroups.htm'>"+karutaStr[LANG]['list_groups']+"</a></li>";
 		html += "					</ul>";
 		html += "				</li>";
-		html += "			</ul>";
-		//----------------------------------------------------------
-		html += "			<ul class='nav navbar-nav pull-right'>";
-		html += "				<li class='dropdown active'><a data-toggle='dropdown' class='dropdown-toggle' href='#'>"+USER.firstname_node.text()+" "+USER.lastname_node.text();
-		if (g_userrole=='designer') 
-			html += " <span id='userrole'>(designer)</span><span class='caret'></span></a>";
-		else
-			html += " <span id='userrole'></span><span class='caret'></span></a>";
-		html += "					<ul class='dropdown-menu pull-right'>";
-		html += "						<li><a href=\"javascript:UIFactory['User'].callChangePassword()\">"+karutaStr[LANG]['change_password']+"</a></li>";
-		if (g_userrole=='designer') {
-			html += "						<li class='divider'></li>";
-			html += "	<li><a href='#' onclick=\"setDesignerRole('designer')\">designer</a></li>";
-			for (role in UICom.roles) {
-				if (role!="designer")
-					html += "	<li><a href='#' onclick=\"setDesignerRole('"+role+"')\">"+role+"</a></li>";
-			}
-		}
-		html += "						<li class='divider'></li><li><a href='login.htm?lang="+LANG+"''>Logout</a></li>";
-		html += "					</ul>";
-		html += "				</li>";
-		html += "			</ul>";
 	}
+	html += "			</ul>";
+	//-----------------USERNAME-----------------------------------------
+	html += "			<ul class='nav navbar-nav navbar-right'>";
+	html += "				<li class='dropdown active'><a data-toggle='dropdown' class='dropdown-toggle' href='#'>"+USER.firstname_node.text()+" "+USER.lastname_node.text();
+	html += " 					<span class='caret'></span></a>";
+	html += "					<ul class='dropdown-menu pull-right'>";
+	html += "						<li><a href=\"javascript:UIFactory['User'].callChangePassword()\">"+karutaStr[LANG]['change_password']+"</a></li>";
+	html += "						<li class='divider'></li><li><a href='login.htm?lang="+LANG+"''>Logout</a></li>";
+	html += "					</ul>";
+	html += "				</li>";
+	html += "			</ul>";
 	//----------------------------------------------------------
-	html += "			</div><!--/.nav-collapse -->";
+	html += "			</div><!--.nav-collapse -->";
 	html += "	</div>";
 	html += "</div>";
 	html += "</div>";
@@ -458,6 +431,11 @@ function displayPage(uuid,depth,type,langcode,edit) {
 	if (UICom.structure['tree'][uuid]!=null) {
 		if (type=='standard')
 			UIFactory['Node'].displayStandard(UICom.structure['tree'][uuid],'contenu',depth,langcode,edit);
+		if (type=='flat')
+			if (UICom.structure["ui"][uuid].semantictag=='welcome-unit')
+				UIFactory['Node'].displayWelcomePage(UICom.structure['tree'][uuid],'contenu',depth,langcode,edit);
+			else
+				UIFactory['Node'].displayStandard(UICom.structure['tree'][uuid],'contenu',depth,langcode,edit);
 		if (type=='translate')
 			UIFactory['Node'].displayTranslate(UICom.structure['tree'][uuid],'contenu',depth,langcode,edit);
 		if (type=='model')
@@ -753,6 +731,19 @@ function getSendPublicURL(uuid,langcode)
 	$("#edit-window-body").html(html);
 	//--------------------------
 	$('#edit-window').modal('show');
+}
+
+//==================================
+function toggleSideBar() {
+//==================================
+	if ($("#sidebar").is(":visible"))
+	{
+		$("#sidebar").hide();
+		$("#contenu").removeClass().addClass('col-md-12');
+	} else {
+		$("#contenu").removeClass().addClass('col-md-9');
+		$("#sidebar").show();
+	}
 }
 
 //==================================
