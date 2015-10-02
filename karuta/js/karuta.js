@@ -26,6 +26,7 @@ var g_encrypted = false;
 var g_display_type = "";
 var g_edit = false;
 var g_visible = 'visible';
+var g_welcome_edit = false;
 
 var g_dashboard_models = {}; // cache for dashboard_models
 //-------------- used for designer-----
@@ -432,7 +433,8 @@ function displayPage(uuid,depth,type,langcode,edit) {
 		if (type=='standard')
 			UIFactory['Node'].displayStandard(UICom.structure['tree'][uuid],'contenu',depth,langcode,edit);
 		if (type=='flat')
-			if (UICom.structure["ui"][uuid].semantictag=='welcome-unit')
+			$("#welcome-edit").html("");
+			if (UICom.structure["ui"][uuid].semantictag=='welcome-unit' && !g_welcome_edit)
 				UIFactory['Node'].displayWelcomePage(UICom.structure['tree'][uuid],'contenu',depth,langcode,edit);
 			else
 				UIFactory['Node'].displayStandard(UICom.structure['tree'][uuid],'contenu',depth,langcode,edit);
@@ -808,4 +810,15 @@ function sendEmailPublicURL(encodeddata,email,langcode) {
 			alert(karutaStr[LANG]['email-sent']);
 		}
 	});
+}
+
+function changeCss(className, classValue) {
+    var cssMainContainer = $('#css-modifier-container');
+
+    if (cssMainContainer.length == 0) {
+        var cssMainContainer = $('<style id="css-modifier-container"></style>');
+        cssMainContainer.appendTo($('head'));
+    }
+
+    cssMainContainer.append(className + " {" + classValue + "}\n");
 }

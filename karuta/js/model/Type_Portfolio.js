@@ -340,7 +340,7 @@ UIFactory["Portfolio"].displaySidebar = function(root,destid,type,langcode,edit,
 		UIFactory["Node"].displaySidebar(root,'parent-'+UICom.rootid,type,langcode,edit,rootid);
 	}
 	if (type=='flat'){
-		html += "<div  class='panel-group' id='parent-"+rootid+"' role='tablist'></div>";
+		html += "<div id='sidebar-content'><div  class='panel-group' id='parent-"+rootid+"' role='tablist'></div></div>";
 		$("#"+destid).append($(html));
 		UIFactory["Node"].displaySidebar(root,'parent-'+UICom.rootid,type,langcode,edit,rootid);
 	}
@@ -1447,13 +1447,15 @@ UIFactory["Portfolio"].getNavBar = function (type,langcode,edit)
 	html += "</div><!-- class='navbar-inner' -->";
 	html += "<div class='collapse navbar-collapse' id='collapse-2'>";
 	html += "	<ul class='nav navbar-nav navbar-right'>";
+	//-------------------- WELCOME PAGE EDIT -----------
+	html += "		<li id='welcome-edit'></li>";
 	//-------------------- ACTIONS----------------------
 	html += "		<li class='dropdown'><a data-toggle='dropdown' class='dropdown-toggle' href='#'>Actions<span class='caret'></span></a>";
 	html += "			<ul class='dropdown-menu'>";
 	html += UIFactory["Portfolio"].getActions(portfolioid);
 	html += "			</ul>";
 	html += "		</li>";
-	//-------------------- ROLES----------------------
+	//-------------------- ROLES-------------------------
 	if (g_userrole=='designer') {
 		html += "	<li class='dropdown'><a data-toggle='dropdown' class='dropdown-toggle' href='#'>Role : <span id='userrole'>designer</span><span class='caret'></span></a>";
 		html += "	<ul class='dropdown-menu pull-right'>";
