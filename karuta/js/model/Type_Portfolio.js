@@ -274,7 +274,7 @@ UIFactory["Portfolio"].displayPortfolio = function(destid,type,langcode,edit)
 		html += "<div id='navigation_bar'></div>";
 		html += "<div id='portfolio-navbar'></div>";
 		html += "<div id='main-container' class='container-fluid'>";
-		html += "	<div class='row'>";
+		html += "	<div id='main-row' class='row'>";
 		html += "		<div class='col-md-3' id='sidebar'></div>";
 		html += "		<div class='col-md-12' id='contenu'></div>";
 		html += "	</div>";

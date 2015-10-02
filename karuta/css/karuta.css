@@ -3,7 +3,8 @@
 	background-color:white;
 }
 
-#main-container, #main-body {
+
+html, body, #main-body, #main-container, #main-row {
 	height:100%;	
 }
 
@@ -29,15 +30,6 @@
 /*      SIDEBAR            */
 /* ====================== */
 
-.selected,
-.selected a {
-	font-weight:bold;
-	color:black;
-}
-
-.selected {
-	border-right:4px solid #e0006d;
-}
 
 .panel-default > .panel-heading {
 	background-color:transparent;
@@ -70,8 +62,11 @@
 	color:black;
 }
 
-
 .sidebar-link {
+	padding:9px;
+}
+
+.sidebar-link,.sidebar-link a{
 	color:white;
 }
 
@@ -91,10 +86,25 @@
 #sidebar {
 	padding-top:15px;
 	background-color: #09bbd9;
-	min-height: 100%;
+	height: 100%;
 	padding-left:0px;
 	padding-right:0px
   }
+
+.sidebar-item a {
+	width:100%;
+}
+
+.selected,
+.selected a {
+	font-weight:bold;
+	color:black;
+}
+
+.selected {
+	border-right:4px solid #e0006d;
+	padding-right:5px;
+}
 
 /* =========== PORTFOLIO-NAVBAR ================= */
 
@@ -131,17 +141,37 @@
 	border-bottom:1px solid #b9da00;
 }
 
-.welcome-title {
-	color:white;
-	font-size:30px;
+.welcome-block .welcome-title {
+	font-size:24px;
 	text-align:center;
 	width:100%;
+	padding-bottom:5px;
 }
 
-.welcome-text{
+.welcome-block .welcome-block .welcome-title {
+	font-size:18px;
+}
+
+#welcome-title {
+	text-align:center;
+	width:100%;
+	color:white;
+	font-size:30px;
+}
+
+.welcome-block .image{
+	margin-left:auto;
+	margin-right:auto;
+	
+}
+
+.welcome-baseline, .welcome-text{
 	padding:10px;
 	width:100%;
 	text-align:center;
+}
+
+.welcome-baseline {
 	color:#18b8d6;
 }
 
@@ -150,9 +180,10 @@
 	margin-right:0px;
 }
 
-.welcome-block .col-md-6{
-	min-height:200px;
+.welcome-block .col-md-6, .welcome-block .col-md-4, .welcome-block .col-md-3, .welcome-block .col-md-2, .welcome-block .col-md-1{
+	height:100%
 }
+
 
 
 

@@ -747,6 +747,20 @@ function toggleSideBar() {
 }
 
 //==================================
+function togglePlusMinus(uuid) {
+//==================================
+	if ($("#toggle_"+uuid).hasClass("glyphicon-plus"))
+	{
+		$("#toggle_"+uuid).removeClass("glyphicon-plus")
+		$("#toggle_"+uuid).addClass("glyphicon-minus")
+	} else {
+		$("#toggle_"+uuid).removeClass("glyphicon-minus")
+		$("#toggle_"+uuid).addClass("glyphicon-plus")
+	}
+}
+
+
+//==================================
 function getPublicURL(uuid,email,role,langcode) {
 //==================================
 	//post /directlink?uuid=&user=&role=

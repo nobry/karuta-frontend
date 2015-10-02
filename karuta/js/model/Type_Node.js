@@ -433,7 +433,7 @@ UIFactory["Node"].displaySidebar = function(root,destid,type,langcode,edit,paren
 					var html = "";
 					var depth = 99;
 					html += "<div class='sidebar-item' id='parent-"+uuid+"' role='tablist'>";
-					html += "  <a id='sidebar_"+uuid+"' class='sidebar-link' data-toggle='collapse' data-parent='#parent-"+parentid+"' onclick=\"displayPage('"+uuid+"',"+depth+",'"+type+"','"+langcode+"',"+g_edit+")\" href='#collapse"+uuid+"' aria-expanded='false' aria-controls='collapse"+uuid+"'>"+text+"</a>";
+					html += "  <a style='cursor:pointer' id='sidebar_"+uuid+"' class='sidebar-link' onclick=\"displayPage('"+uuid+"',"+depth+",'"+type+"','"+langcode+"',"+g_edit+")\" >"+text+"</a>";
 					html += "</div><!-- panel -->";
 					$("#"+destid).append($(html));
 				}
@@ -442,7 +442,10 @@ UIFactory["Node"].displaySidebar = function(root,destid,type,langcode,edit,paren
 					var depth = 1;
 					var html = "";
 					html += "<div class='sidebar-item' id='parent-"+uuid+"' role='tablist'>";
-					html += "  <a   id='sidebar_"+uuid+"' class='sidebar-link' data-toggle='collapse' data-parent='#parent-"+parentid+"' onclick=\"$('.selected').removeClass('selected');$(this).parent().addClass('selected');displayPage('"+uuid+"',"+depth+",'"+type+"','"+langcode+"',"+g_edit+")\" href='#collapse"+uuid+"' aria-expanded='false' aria-controls='collapse"+uuid+"'>"+text+"</a>";
+					html += "  <div  class='sidebar-link'>";
+					html += "  <small style='cursor:pointer' data-toggle='collapse' data-parent='#parent-"+parentid+"' href='#collapse"+uuid+"' onclick=\"togglePlusMinus('"+uuid+"');\"><span  id='toggle_"+uuid+"' class='glyphicon glyphicon-plus ' style='float:right;margin-right:5px;'></span></small>";
+					html += "  <a id='sidebar_"+uuid+"' style='cursor:pointer' onclick=\"displayPage('"+uuid+"',"+depth+",'"+type+"','"+langcode+"',"+g_edit+")\">"+text+"</a>";
+					html += "  </div>"
 					html += "<div id='collapse"+uuid+"' class='panel-collapse collapse' role='tabpanel' aria-labelledby='sidebar_"+uuid+"'>";
 					html += "<div id='panel-body"+uuid+"' class='panel-body'></div><!-- panel-body -->";
 					html += "</div><!-- panel-collapse -->";
@@ -454,6 +457,7 @@ UIFactory["Node"].displaySidebar = function(root,destid,type,langcode,edit,paren
 		}
 	}
 };
+
 
 //==================================================
 UIFactory["Node"].displayWelcomePage = function(root,dest,depth,langcode,edit,inline,backgroundParent)
@@ -467,42 +471,40 @@ UIFactory["Node"].displayWelcomePage = function(root,dest,depth,langcode,edit,in
 	var images = $("asmContext:has(metadata[semantictag='welcome-image'])",data);
 	var imageid = $(images[0]).attr("id");
 	var html = "";
-//	html += "<img class='welcome-image' src='../../../karuta-backend/resources/resource/file/"+imageid+"?lang="+languages[langcode]+"'/>";
 	html += "<div id='welcome-image' style=\"background: url('../../../karuta-backend/resources/resource/file/"+imageid+"?lang="+languages[langcode]+"')\">";
 	html += "<div class='welcome-box'>";
-	html += "<div class='welcome-title' id='welcome-title_"+uuid+"'>";
+	html += "<div class='welcome-title' id='welcome-title'>";
 	html += UICom.structure["ui"][uuid].getLabel('welcome-title','span')
 	html += "</div>";
 	html += "<div class='welcome-line'/>";
-	html += "<div class='welcome-text' id='welcome-text'>";
+	html += "<div class='welcome-baseline' id='welcome-baseline'>";
 	var texts = $("asmContext:has(metadata[semantictag='welcome-baseline'])",data);
 	var textid = $(texts[0]).attr("id");
 	html += UICom.structure["ui"][textid].resource.getView('welcome-title');
-	html += "</div>";
-	html += "</div>";
-	html += "</div>";
+	html += "</div><!-- id='welcome-baseline' -->";
+	html += "</div><!--  class='welcome-box' -->";
+	html += "</div><!-- id='welcome-image' -->";
+	html += "<div id='welcome-blocks'>";
+	html += "</div><!-- id='welcome-blocks' -->";
 	$("#"+dest).append(html);
 	//----------------- WELCOME BLOCKS ------------------------
-	var welcome_blocks = $("asmUnitStructure:has(metadata[semantictag='welcome-block'])",data);
+	var welcome_blocks = $(data).children("asmUnitStructure:has(metadata[semantictag='welcome-block'])");
 	for (var i=0; i<welcome_blocks.length; i++) {
-		var welcome_blockid = $(welcome_blocks[i]).attr("id");
-		UIFactory["Node"].displayBlock(welcome_blocks[i],'welcome_'+welcome_blockid,depth,langcode,edit,inline,backgroundParent,1);
+		UIFactory["Node"].displayBlock(welcome_blocks[i],'welcome-blocks',depth,langcode,edit,inline,backgroundParent,1);
 	}
 	//---------------------------------------
 	if (g_userrole=='designer')
-		html = "<button onclick=\"$('#contenu').html('');UIFactory.Node.displayStandard(UICom.structure.tree['"+uuid+"'],'contenu',99,"+langcode+","+edit+")\">standard</button>";
+		html = "<button onclick=\"$('#contenu').html('');displayPage('"+uuid+"',100,'standard','0',true)\">standard</button>";
 	$("#"+dest).append(html);
 }
 
 //==================================================
-UIFactory["Node"].displayBlock = function(root,dest,depth,langcode,edit,inline,backgroundParent)
+UIFactory["Node"].getLabelStyle = function(uuid)
 //==================================================
 {
-	var html = "";
-	var welcome_blockid = $(root).attr("id");
-	style = "";
-	node = UICom.structure["ui"][welcome_blockid];
+	var node = UICom.structure["ui"][uuid];
 	metadataepm = $(node.metadataepm);
+	var style = "";
 	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'padding-top',true);
 	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-size',true);
 	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'font-weight',false);
@@ -513,27 +515,74 @@ UIFactory["Node"].displayBlock = function(root,dest,depth,langcode,edit,inline,b
 	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'width',true);
 	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'height',true);
 	style += UIFactory["Node"].getOtherMetadataEpm(metadataepm,'othercss');
-	html = "<div id='welcome_"+welcome_blockid+"' class='row welcome-block'>";
-	html += "  <div id='welcome-title_"+welcome_blockid+"' class='col-md-12' style='"+style+"'>";
-	html += UICom.structure["ui"][welcome_blockid].getLabel('welcome-title_'+welcome_blockid,'span');
-	html += "  </div>";
+	return style;
+}
+
+//==================================================
+UIFactory["Node"].getContentStyle = function(uuid)
+//==================================================
+{
+	var node = UICom.structure["ui"][uuid];
+	metadataepm = $(node.metadataepm);
+	var style = "";
+	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-padding-top',true);
+	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-font-size',true);
+	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-font-weight',false);
+	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-font-style',false);
+	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-color',false);
+	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-text-align',false);
+	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-background-color',false);
+	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-width',true);
+	style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-height',true);
+	style += UIFactory["Node"].getOtherMetadataEpm(metadataepm,'node-othercss');
+	return style;
+}
+
+
+//==================================================
+UIFactory["Node"].displayBlock = function(root,dest,depth,langcode,edit,inline,backgroundParent)
+//==================================================
+{
+	var html = "";
+	var style = "";
+	//---------------------------
+	var welcome_blockid = $(root).attr("id");
+	style = UIFactory["Node"].getLabelStyle(welcome_blockid);
+	html += "<div id='welcome_"+welcome_blockid+"' class='row welcome-block'>";
+	html += "  <div id='welcome-title_"+welcome_blockid+"' class='col-md-12 welcome-title' style='"+style+"'>";
+	html += UICom.structure["ui"][welcome_blockid].getView('welcome-title_'+welcome_blockid,'span');
+	html += "  </div>";	
 	html += "</div><!-- class='row' -->";
-	html = "<div class='row welcome-block'>";
+	//----------------- WELCOME RESOURCES ------------------------
+	style = UIFactory["Node"].getContentStyle(welcome_blockid);
+	html += "<div class='row welcome-resources' style='"+style+"'>";
+	var resources = $(root).children("asmContext:has(metadata[semantictag*='welcome'])");
+	for (var i=0; i<resources.length; i++) {
+		var nodeid = $(resources[i]).attr("id");
+		style = UIFactory["Node"].getContentStyle(nodeid);
+		html += "<div id='welcome_resource_"+nodeid+"' class='col-md-12' style='"+style+"'>";
+		html += UICom.structure["ui"][nodeid].resource.getView('welcome_resource_'+nodeid);
+		html += "</div><!-- class='col-md-12' -->";
+	}
+	html += "</div><!-- class='welcome-resources' -->";
 	//----------------- WELCOME BLOCKS ------------------------
-	var welcome_blocks = $("asmUnitStructure:has(metadata[semantictag='welcome-block'])",root);
+	style = UIFactory["Node"].getContentStyle(welcome_blockid);
+	html += "<div class='row welcome-block' style='"+style+"'>";
+	var welcome_blocks = $(root).children("asmUnitStructure:has(metadata[semantictag='welcome-block'])");
 	var lgcolumn = Math.floor(12/welcome_blocks.length);
 	for (var i=0; i<welcome_blocks.length; i++) {
 		var welcome_blockid = $(welcome_blocks[i]).attr("id");
 		html += "<div id='welcome_sub"+welcome_blockid+"' class='col-md-"+lgcolumn+"' style='"+style+"'>";
 		html += "</div><!-- class='col-md' -->";
 	}
-	//---------------------------------------
 	html += "</div><!-- class='row' -->";
+	//---------------------------------------
 	$("#"+dest).append(html);
 	for (var i=0; i<welcome_blocks.length; i++) {
 		var welcome_blockid = $(welcome_blocks[i]).attr("id");
-		UIFactory["Node"].displayBlock(welcome_blocks[i], id='welcome_sub'+welcome_blockid,depth,langcode,edit,inline,backgroundParent);
+		UIFactory["Node"].displayBlock(welcome_blocks[i],'welcome_sub'+welcome_blockid,depth,langcode,edit,inline,backgroundParent);
 	}
+	//-------------------------------------------------------
 }
 
 
@@ -2005,7 +2054,7 @@ UIFactory['Node'].reloadStruct = function(uuid)
 			UICom.parseStructure(data,true);
 //			$("#"+uuid,g_portfolio_current).replaceWith($(":root",data));
 			$("#sidebar").html("");
-			UIFactory["Portfolio"].displaySidebar(UICom.root,'sidebar',null,null,g_edit,UICom.rootid);
+			UIFactory["Portfolio"].displaySidebar(UICom.root,'sidebar','flat',null,g_edit,UICom.rootid);
 			var uuid = $("#page").attr('uuid');
 			if (g_display_type=='model')
 				displayPage(UICom.rootid,1,"model",LANGCODE,g_edit);
