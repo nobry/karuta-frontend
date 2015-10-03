@@ -757,7 +757,7 @@ UIFactory["Node"].displayStandard = function(root,dest,depth,langcode,edit,inlin
 						html += "<div id='prt_node_"+uuid+"' class='col-md-9' style='padding-top:10px;"+style+"'>";
 					if (g_display_type=='header')
 						html += "<div id='prt_node_"+uuid+"' class='col-md-9'>";
-						html += "<a href='#' onclick=\"displayPage('"+uuid+"',1,'standard','"+langcode+"',"+g_edit+")\">"+UICom.structure["ui"][uuid].getLabel('prt_node_'+uuid,'span')+"</a>";
+						html += "<a href='#' onclick=\"displayPage('"+uuid+"',1,'flat','"+langcode+"',"+g_edit+")\">"+UICom.structure["ui"][uuid].getLabel('prt_node_'+uuid,'span')+"</a>";
 					}
 				else if (depth!=1 && depth<10 && name=='asmUnit') {
 					if (g_display_type=='standard' || g_display_type=='flat')
@@ -765,7 +765,7 @@ UIFactory["Node"].displayStandard = function(root,dest,depth,langcode,edit,inlin
 						html += "<div id='prt_node_"+uuid+"' class='col-md-9' style='padding-top:6px;"+style+"'>";
 					if (g_display_type=='header')
 						html += "<div id='prt_node_"+uuid+"' class='col-md-9'>";
-						html += "<a href='#' onclick=\"displayPage('"+uuid+"',100,'standard','"+langcode+"',"+g_edit+")\">"+UICom.structure["ui"][uuid].getLabel('prt_node_'+uuid,'span')+"</a>"+"<span id='help_"+uuid+"' class='ihelp'></span>";
+						html += "<a href='#' onclick=\"displayPage('"+uuid+"',100,'flat','"+langcode+"',"+g_edit+")\">"+UICom.structure["ui"][uuid].getLabel('prt_node_'+uuid,'span')+"</a>"+"<span id='help_"+uuid+"' class='ihelp'></span>";
 					}
 				else {
 					if (g_display_type=='standard' || g_display_type=='flat')
