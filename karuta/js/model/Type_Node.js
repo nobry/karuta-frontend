@@ -468,19 +468,21 @@ UIFactory["Node"].displayWelcomePage = function(root,dest,depth,langcode,edit,in
 	var node = null;
 	var data = root.node;
 	var uuid = $(data).attr("id");
-	var images = $("asmContext:has(metadata[semantictag='welcome-image'])",data);
+	var images = $("asmContext:has(metadata[semantictag='welcome-main-image'])",data);
 	var imageid = $(images[0]).attr("id");
+	var titles = $("asmContext:has(metadata[semantictag='welcome-title'])",data);
+	var titleid = $(titles[0]).attr("id");
 	var html = "";
 	html += "<div id='welcome-image' style=\"background: url('../../../karuta-backend/resources/resource/file/"+imageid+"?lang="+languages[langcode]+"')\">";
 	html += "<div class='welcome-box'>";
 	html += "<div class='welcome-title' id='welcome-title'>";
-	html += UICom.structure["ui"][uuid].getLabel('welcome-title','span')
+	html += UICom.structure["ui"][titleid].resource.getView('welcome-title','span')
 	html += "</div>";
 	html += "<div class='welcome-line'/>";
-	html += "<div class='welcome-baseline' id='welcome-baseline'>";
 	var texts = $("asmContext:has(metadata[semantictag='welcome-baseline'])",data);
 	var textid = $(texts[0]).attr("id");
-	html += UICom.structure["ui"][textid].resource.getView('welcome-title');
+	html += "<div class='welcome-baseline' id='welcome-baseline' style='"+UIFactory["Node"].getContentStyle(textid)+"'>";
+	html += UICom.structure["ui"][textid].resource.getView('welcome-baseline');
 	html += "</div><!-- id='welcome-baseline' -->";
 	html += "</div><!--  class='welcome-box' -->";
 	html += "</div><!-- id='welcome-image' -->";
@@ -488,14 +490,15 @@ UIFactory["Node"].displayWelcomePage = function(root,dest,depth,langcode,edit,in
 	html += "</div><!-- id='welcome-blocks' -->";
 	$("#"+dest).append(html);
 	//----------------- WELCOME BLOCKS ------------------------
-	var welcome_blocks = $(data).children("asmUnitStructure:has(metadata[semantictag='welcome-block'])");
+	var welcome_blocks = $(data).find("asmUnitStructure:has(metadata[semantictag='welcome-page'])").children("asmUnitStructure:has(metadata[semantictag='welcome-block'])");
 	for (var i=0; i<welcome_blocks.length; i++) {
 		UIFactory["Node"].displayBlock(welcome_blocks[i],'welcome-blocks',depth,langcode,edit,inline,backgroundParent,1);
 	}
 	//---------------------------------------
-	if (g_userrole=='designer')
-		html = "<button onclick=\"$('#contenu').html('');displayPage('"+uuid+"',100,'standard','0',true)\">standard</button>";
-	$("#"+dest).append(html);
+	if (g_userrole=='designer') {
+		html = "<a href='#' class='glyphicon glyphicon-edit' onclick=\"if(!g_welcome_edit){g_welcome_edit=true;$('#contenu').html('');displayPage('"+uuid+"',100,'flat','0',true)} else {g_welcome_edit=false;$('#contenu').html('');displayPage('"+uuid+"',100,'flat','0',true)}\"></a>";
+		$("#welcome-edit").html(html);
+	}
 }
 
 //==================================================
@@ -797,7 +800,7 @@ UIFactory["Node"].displayStandard = function(root,dest,depth,langcode,edit,inlin
 				if (root.children.length>0 && depth>0) {
 					html += "<div id='content-"+uuid+"' ";
 					style = "position:relative;";
-//					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-background-color',false);
+					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-background-color',false);
 					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-font-style',false);
 					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-color',false);
 					style += UIFactory["Node"].displayMetadataEpm(metadataepm,'node-padding-top',true);
@@ -897,6 +900,11 @@ UIFactory["Node"].displayStandard = function(root,dest,depth,langcode,edit,inlin
 				$("#embed"+uuid+langcode).oembed();
 			//----------------------------
 		}
+		if (g_userrole=='designer' && semtag=='welcome-unit') {
+			html = "<a href='#' class='glyphicon glyphicon-edit' onclick=\"if(!g_welcome_edit){g_welcome_edit=true;$('#contenu').html('');displayPage('"+uuid+"',100,'flat','0',true)} else {g_welcome_edit=false;$('#contenu').html('');displayPage('"+uuid+"',100,'flat','0',true)}\"></a>";
+			$("#welcome-edit").html(html);
+		}
+
 	} //---- end of private
 };
 
