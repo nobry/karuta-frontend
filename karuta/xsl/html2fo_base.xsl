@@ -7,6 +7,7 @@
       xmlns:fo="http://www.w3.org/1999/XSL/Format"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   
+<xsl:include href="commonFunctions.xsl"/>
 <!-- =========================================================================-->
 <!-- =========================================================================-->
 <!-- =========================================================================-->
@@ -61,13 +62,6 @@
 	</fo:block>
 </xsl:template>
 
-<!-- =====================================-->
-<xsl:template match="div">
-<!-- =====================================-->
-	<fo:block space-before="5pt" space-after="5pt">
-		<xsl:apply-templates select="*|text()"/>
-	</fo:block>
-</xsl:template>
 
 <!-- =========================================================================-->
 <!-- =========================================================================-->
@@ -298,7 +292,7 @@
 <!-- =====================================-->
 	<fo:table width="100%">
 		<fo:table-body>
-			<xsl:apply-templates select="*"/>
+			<xsl:apply-templates select="*[not(contains(@style,'display:none'))]"/>
 		</fo:table-body>
 	</fo:table>
 </xsl:template>
@@ -307,7 +301,7 @@
 <xsl:template match="tr">
 <!-- =====================================-->
 	<fo:table-row>
-			<xsl:apply-templates select="*"/>
+			<xsl:apply-templates select="*[not(contains(@style,'display:none'))]"/>
 	</fo:table-row>
 </xsl:template>
 
@@ -316,7 +310,7 @@
 <!-- =====================================-->
 	<fo:table-cell border="1px solid gray" padding="2px">
 		<fo:block>
-			<xsl:apply-templates select="*"/>
+			<xsl:apply-templates select="*[not(contains(@style,'display:none'))]"/>
 		</fo:block>
 	</fo:table-cell>
 </xsl:template>
