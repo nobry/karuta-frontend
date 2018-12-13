@@ -1310,7 +1310,11 @@ UIFactory["Node"].displayStandard = function(root,dest,depth,langcode,edit,inlin
 				var alreadyDisplayed = false;
 				if (typeof europass_installed != 'undefined' && europass_installed && semtag=="EuropassL"){
 					alreadyDisplayed = true;
-					node.structured_resource.displayView('content-'+uuid,langcode,'detail',uuid,menu);
+					if( node.structure_resource != null )
+					{
+						node.structured_resource.displayView('content-'+uuid,langcode,'detail',uuid,menu);
+					}
+					// FIXME: Need visual feedback when object isn't rendered
 				}
 				if (!alreadyDisplayed && semtag!='bubble_level1') {
 					for( var i=0; i<root.children.length; ++i ) {
